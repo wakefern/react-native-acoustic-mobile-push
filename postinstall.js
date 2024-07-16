@@ -299,14 +299,15 @@ function readAndSaveMceConfig(installDirectory, pluginPath, campaignConfigFilePa
 		  const gradlePropertiesPath = path.join(campaignConfigFilePath, '../android/gradle.properties');
 		  updateCampaignSDKVersionInProperties(gradlePropertiesPath, jsonData.androidVersion);
 
-		  const destinationDirectory = path.join(installDirectory, "android", "app", "src", "main", "assets");
+		  console.info('Our project manages our own MceConfig.json files for each banner');
+		  /*const destinationDirectory = path.join(installDirectory, "android", "app", "src", "main", "assets");
 		  // Create assets directory if it doesn't exist
 		  if (!fs.existsSync(destinationDirectory)) {
 		    fs.mkdirSync(destinationDirectory, { recursive: true });
 		    console.log(`Created assets directory at: ${destinationDirectory}`);
 		  }
 		  const androidAppPath = path.join(destinationDirectory, "MceConfig.json");
-		  saveConfig(androidConfig, androidAppPath);
+		  saveConfig(androidConfig, androidAppPath);*/
 		}
   
 		if (jsonData.iOS) {
@@ -315,8 +316,9 @@ function readAndSaveMceConfig(installDirectory, pluginPath, campaignConfigFilePa
   
 		  saveConfig(iosConfig, iosDestinationPath);
 
-		  const iosAppPath = path.join(mainAppPath, "MceConfig.json");
-		  saveConfig(iosConfig, iosAppPath);
+		  console.info('Our project manages our own MceConfig.json files for each banner');
+		  /*const iosAppPath = path.join(mainAppPath, "MceConfig.json");
+		  saveConfig(iosConfig, iosAppPath);*/
 		}
 	  } else {
 		console.error('No "android/ios" object found in the JSON file.');
