@@ -1,5 +1,5 @@
 /*
- * Copyright © 2019 Acoustic, L.P. All rights reserved.
+ * Copyright (C) 2025 Acoustic, L.P. All rights reserved.
  *
  * NOTICE: This file contains material that is confidential and proprietary to
  * Acoustic, L.P. and/or other developers. No license is granted under any intellectual or
@@ -21,6 +21,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
 import android.view.DisplayCutout;
+import android.content.res.Resources;
 
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Callback;
@@ -108,6 +109,7 @@ public class RNAcousticMobilePushModule extends ReactContextBaseJavaModule imple
 	protected static ReactApplicationContext reactContext;
     private static boolean restart = false;
     private static MceSdkConfiguration mceSdkConfiguration;
+    private static final int INVALID_RESOURCE_ID = 0;
 
     static String channelDescription = "This is the notification channel for the MCE SDK sample application";
     static CharSequence channelName = "MCE SDK Notification Channel";
@@ -178,12 +180,8 @@ public class RNAcousticMobilePushModule extends ReactContextBaseJavaModule imple
         List<Attribute> attributes = new LinkedList<Attribute>();
         attributes.add(new StringAttribute("sdk", "react-native"));
         attributes.add(new StringAttribute("react-native", MceSdk.getSdkVerNumber() ));
-        try {
-            Logger.d(TAG, "Sending react-native channel attribute");
-            MceSdkInternal.getQueuedAttributesClient().updateChannelAttributes(reactContext, attributes);
-        } catch (JSONException ex) {
-            Logger.d(TAG, "Couldn't create channel attribute", ex);
-        }
+        Logger.d(TAG, "Sending react-native channel attribute");
+        MceSdkInternal.getQueuedAttributesClient().updateChannelAttributes(reactContext, attributes);
     }
 
     private static void startMceSdk() {
@@ -470,7 +468,7 @@ public class RNAcousticMobilePushModule extends ReactContextBaseJavaModule imple
 
 		final Map<String, Object> constants = new HashMap<>();
 		constants.put("sdkVersion", MceSdk.getSdkVerNumber());
-        constants.put("pluginVersion", "3.8.6");
+        constants.put("pluginVersion", "3.9.45");
 		constants.put("appKey", appKey );
 		return constants;
 	}
@@ -489,50 +487,6 @@ public class RNAcousticMobilePushModule extends ReactContextBaseJavaModule imple
             notificationManager.createNotificationChannel(channel);
         }
     }
-
-    /**
-    From: Matt Miller <matthew.miller@wakefern.com>
-    This was a method I added. With this version of the plugin, there is no way to override the notification icon used when receiving a push not
-ification. This will allow the app frontend to set this to some asset.
-    Additionally, there is no way exposed to the frontend to allow the app to create a custom notification channel other than the defaults. 
-    Allow this method to configure these variables as well.
-    */
-    @ReactMethod
-    public void configureAndroidChannel(String smallIconResId, String largeIconResId, String id, String name, String description) {
-        Logger.d(TAG, "configureAndroidChannel: " 
-            + smallIconResId + " " + largeIconResId + " "
-            + id + " " + name + " " + description);
-        try {
-            final int smallIcon = reactContext.getResources().getIdentifier(smallIconResId, "mipmap", reactContext.getPackageName());
-            Log.d(TAG, "small icon resId = " + smallIcon);
-            if (smallIcon == 0) {
-                throw new Exception("Invalid resource id 0");
-            }
-            setIcon(smallIcon);
-        } catch (Exception e) {
-            e.printStackTrace();
-            Log.e(TAG, "Error setting small notification icon: " + e.toString());
-        }
-
-        try {
-            final int largeIcon = reactContext.getResources().getIdentifier(largeIconResId, "mipmap", reactContext.getPackageName());
-            Log.d(TAG, "large icon resId = " + largeIcon);
-            if (largeIcon == 0) {
-                throw new Exception("Invalid resource id 0");
-            }
-            MceSdk.getNotificationsClient().getNotificationsPreference().setLargeIcon(reactContext, largeIcon);
-        } catch (Exception e) {
-            e.printStackTrace();
-            Log.e(TAG, "Error setting large notification icon: " + e.toString());
-        }
-
-        channelIdentifier = id;
-        channelName = name;
-        channelDescription = description;
-
-        requestPushPermission();
-    }
-
 
     @ReactMethod
     public void requestPushPermission() {
@@ -892,10 +846,30 @@ ification. This will allow the app frontend to set this to some asset.
 
     }
 
+    /**
+     * Sets the notification icon for the MCE SDK.
+     *
+     * @param imageName The name of the image resource to be used as the notification icon.
+     * @param promise A Promise to resolve or reject based on the success of the operation.
+     */
     @ReactMethod
-    public void setIcon(Integer iconId) {
-      MceSdk.getNotificationsClient().getNotificationsPreference().setIcon(
-        reactContext, iconId);
+    public void setIcon(String imageName, Promise promise) {
+        try {
+            Resources resources = reactContext.getResources();
+            String packageName = reactContext.getPackageName();
+            int iconResourceId = resources.getIdentifier(imageName, "drawable", packageName);
+
+            if (iconResourceId == INVALID_RESOURCE_ID) {
+                throw new Resources.NotFoundException("Drawable resource not found: " + imageName);
+            }
+
+            MceSdk.getNotificationsClient().getNotificationsPreference().setIcon(reactContext, iconResourceId);
+            promise.resolve(null);
+        } catch (Resources.NotFoundException e) {
+            promise.reject("RESOURCE_NOT_FOUND", "The specified image resource was not found: " + imageName, e);
+        } catch (Exception e) {
+            promise.reject("SET_ICON_ERROR", "An error occurred while setting the notification icon", e);
+        }
     }
 
     @ReactMethod
