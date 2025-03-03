@@ -68,7 +68,7 @@ function verifyStanza(array, stanzaString) {
 	return array;
 }
 
-function modifyManifest(installDirectory) {
+function modifyManifest(installDirectory, useCustomFirebaseMessagingService = false) {
 	let manifestPath = path.join(installDirectory, "android", "app", "src", "main", "AndroidManifest.xml");
 	new xml2js.Parser().parseString(fs.readFileSync(manifestPath), function (err, document) {
 
@@ -111,10 +111,14 @@ function modifyManifest(installDirectory) {
 			'<service android:name="co.acoustic.mobile.push.sdk.registration.RegistrationIntentService" />',
 			'<service android:name="co.acoustic.mobile.push.sdk.attributes.AttributesQueueConsumer" />',
 			'<service android:name="co.acoustic.mobile.push.sdk.job.MceJobService" android:permission="android.permission.BIND_JOB_SERVICE"/>',
-			'<service android:name="co.acoustic.mobile.push.sdk.messaging.fcm.FcmMessagingService"><intent-filter><action android:name="com.google.firebase.MESSAGING_EVENT"/></intent-filter></service>'
 		].forEach((service) => {
 			services = verifyStanza(services, service);
 		});
+		if (!useCustomFirebaseMessagingService) {
+			services = verifyStanza(services, '<service android:name="co.acoustic.mobile.push.sdk.messaging.fcm.FcmMessagingService"><intent-filter><action android:name="com.google.firebase.MESSAGING_EVENT"/></intent-filter></service>');
+		} else {
+			console.log("Using custom Firebase Messaging Service, not adding default service");
+		}
 		document.manifest.application[0].service = services;
 
 		console.log("Adding internet, wake lock, boot, vibrate and call_phone permisssions to AndroidManifest.xml");
