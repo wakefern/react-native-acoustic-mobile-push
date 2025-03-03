@@ -5,6 +5,7 @@
   "iOSVersion": "",
   "Android Version": "<x.xx.xxx>, native Android SDK version, empty for latest",
   "androidVersion": "3.10.14",
+  "useCustomFirebaseMessagingService" : false,
 
   "plugins": {
     "Required Mobile-Push plugins": "<true/false>, enable or disable plugin",
