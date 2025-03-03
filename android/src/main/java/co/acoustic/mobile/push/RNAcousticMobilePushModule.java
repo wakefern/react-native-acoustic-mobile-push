@@ -503,10 +503,10 @@ ification. This will allow the app frontend to set this to some asset.
         try {
             final int smallIcon = reactContext.getResources().getIdentifier(smallIconResId, "mipmap", reactContext.getPackageName());
             Log.d(TAG, "small icon resId = " + smallIcon);
-            if (smallIcon == 0) {
+            if (smallIcon == INVALID_RESOURCE_ID) {
                 throw new Exception("Invalid resource id 0");
             }
-            setIcon(smallIcon);
+            MceSdk.getNotificationsClient().getNotificationsPreference().setIcon(reactContext, smallIcon);
         } catch (Exception e) {
             e.printStackTrace();
             Log.e(TAG, "Error setting small notification icon: " + e.toString());
@@ -515,7 +515,7 @@ ification. This will allow the app frontend to set this to some asset.
         try {
             final int largeIcon = reactContext.getResources().getIdentifier(largeIconResId, "mipmap", reactContext.getPackageName());
             Log.d(TAG, "large icon resId = " + largeIcon);
-            if (largeIcon == 0) {
+            if (largeIcon == INVALID_RESOURCE_ID) {
                 throw new Exception("Invalid resource id 0");
             }
             MceSdk.getNotificationsClient().getNotificationsPreference().setLargeIcon(reactContext, largeIcon);
