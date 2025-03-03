@@ -521,7 +521,23 @@ const mainAppPath = findMainPath(installDirectory);
 addOrReplaceMobilePushConfigFile(installDirectory);
 //replaceMain(mainAppPath);
 modifyInfoPlist(mainAppPath);
-modifyManifest(installDirectory);
+
+try {
+	const campaignConfigData = fs.readFileSync(campaignConfigFilePath, 'utf8');
+
+	const jsonData = JSON.parse(campaignConfigData);
+	if (jsonData.useCustomFirebaseMessagingService) {
+		modifyManifest(installDirectory, jsonData.useCustomFirebaseMessagingService);
+	} else {
+		modifyManifest(installDirectory);
+	}
+} catch (error) {
+	if (error.code === 'ENOENT') { // Handle "file not found" error specifically
+		console.error(`File not found: ${campaignConfigFilePath}`);
+	} else {
+		console.error('Error reading or parsing JSON file:', error);
+	}
+}
 modifyStrings(installDirectory);
 
 console.log(chalk.green("Installation Complete!"));
