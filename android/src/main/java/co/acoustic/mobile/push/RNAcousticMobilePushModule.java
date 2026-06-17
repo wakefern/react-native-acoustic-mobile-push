@@ -504,7 +504,7 @@ ification. This will allow the app frontend to set this to some asset.
         if (smallIcon == 0) {
             throw new Exception("Invalid resource id 0");
         }
-        setIcon(smallIcon);
+        MceSdk.getNotificationsClient().getNotificationsPreference().setIcon(reactContext, smallIcon);
     } catch (Exception e) {
         e.printStackTrace();
         Log.e(TAG, "Error setting small notification icon: " + e.toString());
