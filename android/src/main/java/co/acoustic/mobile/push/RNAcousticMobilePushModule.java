@@ -487,7 +487,6 @@ public class RNAcousticMobilePushModule extends ReactContextBaseJavaModule imple
   }
 
     /**
-  From: 
   This was a method I added. With this version of the plugin, there is no way to override the notification icon used when receiving a push not
 ification. This will allow the app frontend to set this to some asset.
   Additionally, there is no way exposed to the frontend to allow the app to create a custom notification channel other than the defaults. 
@@ -504,7 +503,7 @@ ification. This will allow the app frontend to set this to some asset.
         if (smallIcon == 0) {
             throw new Exception("Invalid resource id 0");
         }
-        MceSdk.getNotificationsClient().getNotificationsPreference().setIcon(reactContext, smallIcon);
+        setIcon(smallIcon);
     } catch (Exception e) {
         e.printStackTrace();
         Log.e(TAG, "Error setting small notification icon: " + e.toString());
