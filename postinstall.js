@@ -205,7 +205,7 @@ function addAndroidConfigFile(installDirectory) {
 }
 
 /**
- * : This is a modification to install the aar files in the libs directory of the root project.
+ * This is a modification to install the aar files in the libs directory of the root project.
  * This is to avoid a packaging error when running `.gradlew app:assembleRelease`.
  * https://github.com/facebook/react-native/issues/33062
  * 

@@ -491,9 +491,8 @@ public class RNAcousticMobilePushModule extends ReactContextBaseJavaModule imple
     }
 
     /**
-    From: 
-    This was a method I added. With this version of the plugin, there is no way to override the notification icon used when receiving a push not
-ification. This will allow the app frontend to set this to some asset.
+    This was a method added. With this version of the plugin, there is no way to override the notification icon used when receiving a push notification.
+    This will allow the app frontend to set this to some asset.
     Additionally, there is no way exposed to the frontend to allow the app to create a custom notification channel other than the defaults. 
     Allow this method to configure these variables as well.
     */
